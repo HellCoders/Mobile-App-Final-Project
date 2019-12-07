@@ -19,8 +19,10 @@ import android.location.Location
 import android.location.Address
 import android.location.Geocoder
 import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.widget.Toast
 import androidx.core.content.getSystemService
+import java.security.MessageDigest
 
 class MainActivity : AppCompatActivity(), SensorEventListener
 {
@@ -108,7 +110,7 @@ class MainActivity : AppCompatActivity(), SensorEventListener
             startActivity(register_intent)
         })
 
-        // To go the forgotten password screen
+        // To reset the forgotten password screen
         val forgot_pw = findViewById<Button>(R.id.PassWordForgotten)
         forgot_pw.setOnClickListener({
             val forgotpw_intent = Intent(this, ForgotPassword::class.java)
@@ -145,7 +147,8 @@ class MainActivity : AppCompatActivity(), SensorEventListener
             // Shake detected! View encrypted pictures
             if (accel > 8) {
                 val textFromUN = UNtext.getText().toString()
-                val textFromPW = PWtext.getText().toString()
+                var textFromPW = PWtext.getText().toString()
+                textFromPW = toMD5Hash(textFromPW)
 
                 logins.clear()
                 logins.addAll(LogInManager!!.getAllLogIns)
@@ -198,5 +201,35 @@ class MainActivity : AppCompatActivity(), SensorEventListener
         logins.clear()
         logins.addAll(LogInManager!!.getAllLogIns)
         super.onPause()
+    }
+
+    // Formats byte array to a hexadecimal string
+    fun byteArrayToHexString(array: Array<Byte>) : String {
+        var stringBuilder = StringBuilder(array.size * 2)
+
+        for (byte in array) {
+            val toAppend =
+                String.format("%2X", byte).replace(" ", "0")
+            stringBuilder.append(toAppend).append("-")
+        }
+
+        stringBuilder.setLength(stringBuilder.length - 1)
+
+        return stringBuilder.toString()
+    }
+
+    // Hashes text so that it can be secured
+    fun toMD5Hash(text: String) : String {
+        var hashedText = ""
+
+        try {
+            val md5 = MessageDigest.getInstance("MD5")
+            val md5HashBytes = md5.digest(text.toByteArray()).toTypedArray()
+            hashedText = byteArrayToHexString(md5HashBytes)
+        } catch (e: Exception) {
+            Log.e("Couldn't Hash: ", text)
+        }
+
+        return hashedText
     }
 }

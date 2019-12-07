@@ -1,10 +1,13 @@
 package com.example.finalproject
 
 import android.os.Bundle
+import android.text.method.PasswordTransformationMethod
+import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import java.security.MessageDigest
 
 class RegisterScreen : AppCompatActivity()
 {
@@ -30,6 +33,7 @@ class RegisterScreen : AppCompatActivity()
         // Setting up fields for the username, password, and email
         UNtext = findViewById<EditText>(R.id.UserName)
         PWtext = findViewById<EditText>(R.id.PassWord)
+        PWtext.setTransformationMethod(PasswordTransformationMethod())
         Etext = findViewById<EditText>(R.id.Email)
 
         // To register yourself, assuming that your username and/or
@@ -37,7 +41,8 @@ class RegisterScreen : AppCompatActivity()
         val register_login = findViewById<Button>(R.id.Registration)
         register_login.setOnClickListener({
             val textFromUN = UNtext.getText().toString()
-            val textFromPW = PWtext.getText().toString()
+            var textFromPW = PWtext.getText().toString()
+            textFromPW = toMD5Hash(textFromPW)
             val textFromEmail = Etext.getText().toString()
 
             var found = 0
@@ -71,4 +76,34 @@ class RegisterScreen : AppCompatActivity()
             }
         })
     }
+}
+
+// Formats byte array to a hexadecimal string
+fun byteArrayToHexString(array: Array<Byte>) : String {
+    var stringBuilder = StringBuilder(array.size * 2)
+
+    for (byte in array) {
+        val toAppend =
+            String.format("%2X", byte).replace(" ", "0")
+        stringBuilder.append(toAppend).append("-")
+    }
+
+    stringBuilder.setLength(stringBuilder.length - 1)
+
+    return stringBuilder.toString()
+}
+
+// Hashes text so that it can be secured
+fun toMD5Hash(text: String) : String {
+    var hashedText = ""
+
+    try {
+        val md5 = MessageDigest.getInstance("MD5")
+        val md5HashBytes = md5.digest(text.toByteArray()).toTypedArray()
+        hashedText = byteArrayToHexString(md5HashBytes)
+    } catch (e: Exception) {
+        Log.e("Couldn't Hash: ", text)
+    }
+
+    return hashedText
 }
