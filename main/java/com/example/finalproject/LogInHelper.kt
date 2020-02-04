@@ -1,9 +1,10 @@
-package com.example.finalproject
-
 import android.content.ContentValues
 import android.content.Context
 import android.database.sqlite.SQLiteDatabase
 import android.database.sqlite.SQLiteOpenHelper
+import android.graphics.Bitmap
+import com.example.finalproject.LogIns
+import com.example.finalproject.PictureHashes
 
 class LogInHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, null, DATABASE_VERSION)
 {
@@ -26,6 +27,7 @@ class LogInHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, nu
         private val PICTURE_HASH = "PICTURE_HASH"
         private val ADDRESS = "ADDRESS"
         private val DATE_TIME = "DATE_TIME"
+        private val PICTURE_NAME = "PICTURE_NAME"
 
         // The Tables
         private val LOGINS_TABLE = ("CREATE TABLE " + LOGINS + "(" + ID +
@@ -33,8 +35,8 @@ class LogInHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, nu
                 PASSWORD + " TEXT, " + EMAIL + " TEXT " + ");")
 
         private val PICTURE_TABLE = ("CREATE TABLE " + PICTURES + "(" +
-                USER_ID + " INTEGER, " + PICTURE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                PICTURE_HASH + " TEXT, " + DATE_TIME + " TEXT, " + ADDRESS + " TEXT " + ");")
+                PICTURE_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " + USER_ID + " TEXT, " +
+                PICTURE_NAME + " TEXT, " + PICTURE_HASH + " TEXT, " + DATE_TIME + " TEXT, " + ADDRESS + " TEXT " + ");")
     }
 
     override fun onCreate(p0: SQLiteDatabase)
@@ -70,14 +72,15 @@ class LogInHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, nu
         db.close()
     }
 
-    fun addPicture(Id: Long, Image: PictureHashes)
+    fun addPicture(Image: PictureHashes)
     {
         val db = this.writableDatabase
         val values = ContentValues()
-        values.put(USER_ID, Id)
+        values.put(USER_ID, Image.user_id)
         values.put(PICTURE_HASH, Image.picture_hash)
         values.put(ADDRESS, Image.Address)
         values.put(DATE_TIME, Image.Date_Time)
+        values.put(PICTURE_NAME, Image.picture_name)
         Image.picture_id = db.insert(PICTURES, null, values)
         db.close()
     }
@@ -116,9 +119,11 @@ class LogInHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, nu
                                 val PH = PictureHashes()
 
                                 PH.picture_id = sCursor.getLong(sCursor.getColumnIndex(PICTURE_ID))
+                                PH.user_id = sCursor.getString(sCursor.getColumnIndex(USER_ID))
                                 PH.picture_hash = sCursor.getString(sCursor.getColumnIndex(PICTURE_HASH))
                                 PH.Address = sCursor.getString(sCursor.getColumnIndex(ADDRESS))
                                 PH.Date_Time = sCursor.getString(sCursor.getColumnIndex(DATE_TIME))
+                                PH.picture_name = sCursor.getString(sCursor.getColumnIndex(PICTURE_NAME))
 
                                 PictureArrayList.add(PH)
                             }
@@ -135,4 +140,42 @@ class LogInHelper(context: Context): SQLiteOpenHelper(context, DATABASE_NAME, nu
             db.close()
             return LogInsArrayList
         }
+
+    fun getImagesForUser(Username: String): ArrayList<PictureHashes?>?
+    {
+        val db = this.readableDatabase
+        val PictureArrayList = ArrayList<PictureHashes?>()
+
+        val secQuery = "SELECT * FROM ${PICTURES} ORDER BY ${USER_ID}"
+        val sCursor = db.rawQuery(secQuery, null)
+        if (sCursor.moveToFirst())
+        {
+            while (sCursor.isAfterLast == false)
+            {
+                if (sCursor.getString(sCursor.getColumnIndex(USER_ID)) == Username)
+                {
+                    val PH = PictureHashes()
+
+                    PH.picture_id = sCursor.getLong(sCursor.getColumnIndex(PICTURE_ID))
+                    PH.user_id = sCursor.getString(sCursor.getColumnIndex(USER_ID))
+                    PH.picture_hash = sCursor.getString(sCursor.getColumnIndex(PICTURE_HASH))
+                    PH.Address = sCursor.getString(sCursor.getColumnIndex(ADDRESS))
+                    PH.Date_Time = sCursor.getString(sCursor.getColumnIndex(DATE_TIME))
+                    PH.picture_name = sCursor.getString(sCursor.getColumnIndex(PICTURE_NAME))
+                    PictureArrayList.add(PH)
+                }
+                sCursor.moveToNext()
+            }
+        }
+        return PictureArrayList
+    }
+
+    fun DeleteByName(Image: String, Username: String){
+        val db = this.writableDatabase
+        db.delete(PICTURES, USER_ID + "=? AND " + PICTURE_NAME + "=?", arrayOf(Username, Image))
+        db.close()
+    }
+
+
+
 }

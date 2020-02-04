@@ -1,5 +1,6 @@
 package com.example.finalproject
 
+import LogInHelper
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -49,6 +50,9 @@ class MainActivity : AppCompatActivity(), SensorEventListener
     private var lastTime = 0.toLong()
     private var currTime = 0.toLong()
 
+    // Permissions
+    val PERMISSIONS = arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION, android.Manifest.permission.CAMERA, android.Manifest.permission.READ_EXTERNAL_STORAGE, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setTitle("Log In Screen")
@@ -73,35 +77,79 @@ class MainActivity : AppCompatActivity(), SensorEventListener
         PWtext = findViewById<EditText>(R.id.PassWord)
         PWtext.setTransformationMethod(PasswordTransformationMethod())
 
-        // Asking user for permission to access camera, Internet, and location
-        if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION))
-        // || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
-        {
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),1)
-            // android.Manifest.permission.ACCESS_COARSE_LOCATION
-        } else {
-
-            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
-            // || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED
-            {
-                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1)
-                // android.Manifest.permission.ACCESS_COARSE_LOCATION
-            }
-        }
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.CAMERA))
         // || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
         {
-            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA),1)
+            ActivityCompat.requestPermissions(this, PERMISSIONS,1)
             // android.Manifest.permission.ACCESS_COARSE_LOCATION
         } else {
-
             if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)
             // || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED
             {
-                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), 1)
+                ActivityCompat.requestPermissions(this, PERMISSIONS, 1)
                 // android.Manifest.permission.ACCESS_COARSE_LOCATION
             }
         }
+
+//        // Asking user for permission to access location
+//        if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_FINE_LOCATION))
+//        // || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+//        {
+//            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION),1)
+//            // android.Manifest.permission.ACCESS_COARSE_LOCATION
+//        } else {
+//            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
+//            // || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED
+//            {
+//                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.ACCESS_FINE_LOCATION), 1)
+//                // android.Manifest.permission.ACCESS_COARSE_LOCATION
+//            }
+//        }
+//
+//        // Asking user for permission to access camera
+//        if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.CAMERA))
+//        // || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+//        {
+//            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA),1)
+//            // android.Manifest.permission.ACCESS_COARSE_LOCATION
+//        } else {
+//            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.CAMERA)!= PackageManager.PERMISSION_GRANTED)
+//            // || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED
+//            {
+//                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.CAMERA), 1)
+//                // android.Manifest.permission.ACCESS_COARSE_LOCATION
+//            }
+//        }
+//
+//        // Asking user for permission to write to storage
+//        if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE))
+//        // || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+//        {
+//            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE),1)
+//            // android.Manifest.permission.ACCESS_COARSE_LOCATION
+//        } else {
+//            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED)
+//            // || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED
+//            {
+//                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.WRITE_EXTERNAL_STORAGE), 1)
+//                // android.Manifest.permission.ACCESS_COARSE_LOCATION
+//            }
+//        }
+//
+//        // Asking user for permission to read storage
+//        if (ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.READ_EXTERNAL_STORAGE))
+//        // || ActivityCompat.shouldShowRequestPermissionRationale(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)
+//        {
+//            ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE),1)
+//            // android.Manifest.permission.ACCESS_COARSE_LOCATION
+//        } else {
+//            if (ActivityCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED)
+//            // || ActivityCompat.checkSelfPermission(this, android.Manifest.permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED
+//            {
+//                ActivityCompat.requestPermissions(this, arrayOf(android.Manifest.permission.READ_EXTERNAL_STORAGE), 1)
+//                // android.Manifest.permission.ACCESS_COARSE_LOCATION
+//            }
+//        }
 
         // To go to the register screen
         val register_login = findViewById<Button>(R.id.Register)
